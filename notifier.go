@@ -1,40 +1,40 @@
 package main
 
 import (
-    "errors"
-    "encoding/json"
-    "net/http"
-    "net/url"
+	"encoding/json"
+	"errors"
+	"net/http"
+	"net/url"
 )
 
 type Attachment struct {
-	Color string `json:"color"`
-	Text string `json:"text"`
-	Fallback string `json:"fallback"`
+	Color      string `json:"color"`
+	Text       string `json:"text"`
+	Fallback   string `json:"fallback"`
 	AuthorName string `json:"author_name"`
 	AuthorIcon string `json:"author_icon"`
-	ThumbUrl string `json:"thumb_url"`
+	ThumbUrl   string `json:"thumb_url"`
 }
 
 type PostMessageResponse struct {
-	Ok bool
-    Error string
+	Ok    bool
+	Error string
 }
 
 type SlackNotifier struct {
-    AccessToken string
-    Channels []ChannelConf
+	AccessToken string
+	Channels    []ChannelConf
 }
 
 func NewSlackNotifier(conf *WatcherConf) (*SlackNotifier, error) {
-    return &SlackNotifier{AccessToken: conf.SlackAccessToken, Channels: conf.Channels}, nil
+	return &SlackNotifier{AccessToken: conf.SlackAccessToken, Channels: conf.Channels}, nil
 }
 
 func (slackNotifier *SlackNotifier) Notify(railway string, text string) error {
 	attachment := &Attachment{
-		Color: "good",
-		Text: text,
-		Fallback: text,
+		Color:      "good",
+		Text:       text,
+		Fallback:   text,
 		AuthorName: RailwayToName[railway],
 		// AuthorIcon: "http://go-imghr.ds-12.com/f.jpg",
 		// ThumbUrl: "http://go-imghr.ds-12.com/f.jpg",
@@ -46,16 +46,16 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string) error {
 		return err
 	}
 
-    channel := ""
-    for _, v := range(slackNotifier.Channels) {
-        if v.Railway == railway {
-            channel = v.Channel
-            break
-        }
-    }
-    if channel == "" {
-        return errors.New("Could not find channel")
-    }
+	channel := ""
+	for _, v := range slackNotifier.Channels {
+		if v.Railway == railway {
+			channel = v.Channel
+			break
+		}
+	}
+	if channel == "" {
+		return errors.New("Could not find channel")
+	}
 
 	v := url.Values{}
 	v.Set("token", slackNotifier.AccessToken)
@@ -70,8 +70,8 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string) error {
 	dec.Decode(&data)
 
 	if data.Ok != true {
-        return errors.New("Failed postMessage " + data.Error)
+		return errors.New("Failed postMessage " + data.Error)
 	}
 
-    return nil
+	return nil
 }

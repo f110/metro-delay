@@ -11,15 +11,16 @@ const (
 	RailwayNamboku    = "odpt.Railway:TokyoMetro.Namboku"
 	RailwayFukutoshin = "odpt.Railway:TokyoMetro.Fukutoshin"
 )
+
 var RailwayToName map[string]string = map[string]string{
-	RailwayGinza: "銀座線",
+	RailwayGinza:      "銀座線",
 	RailwayMarunouchi: "丸ノ内線",
-	RailwayHibiya: "日比谷線",
-	RailwayTozai: "東西線",
-	RailwayChiyoda: "千代田線",
-	RailwayYurakucho: "有楽町線",
-	RailwayHanzomon: "半蔵門線",
-	RailwayNamboku: "南北線",
+	RailwayHibiya:     "日比谷線",
+	RailwayTozai:      "東西線",
+	RailwayChiyoda:    "千代田線",
+	RailwayYurakucho:  "有楽町線",
+	RailwayHanzomon:   "半蔵門線",
+	RailwayNamboku:    "南北線",
 	RailwayFukutoshin: "副都心線",
 }
 
@@ -38,14 +39,14 @@ const (
 )
 
 const (
-	StatusSuspended = "運転見合わせ"
-	StatuShuttle    = "折返し運転"
+	StatusSuspended         = "運転見合わせ"
+	StatuShuttle            = "折返し運転"
 	StatusTimetableDisarray = "ダイヤ乱れ"
 	// 運転再開・ダイヤ乱れ
 	StatusDelay          = "遅延"
 	StatusPartiallyDelay = "一部列車遅延"
-	StatusAbortDirect = "直通運転中止"
-	StatusRestartDirect = "直通運転再開"
+	StatusAbortDirect    = "直通運転中止"
+	StatusRestartDirect  = "直通運転再開"
 	// 快速運転中止
 	// 快速運転再開
 	// 準急運転中止
