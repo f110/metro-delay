@@ -6,8 +6,11 @@ import (
 )
 
 type ChannelConf struct {
-	Railway string
-	Channel string
+	Railway    string
+	Channel    []string
+	AuthorIcon string `json:"author_icon"`
+	ThumbUrl   string `json:"thumb_url"`
+	IconUrl    string `json:"icon_url"`
 }
 
 type WatcherConf struct {

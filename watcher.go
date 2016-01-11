@@ -77,7 +77,7 @@ func (watcher *MetroWatcher) Start(notifier *SlackNotifier) error {
 
 			if v.Status != "" && watcher.lastStatusTime[v.Railway].Unix() != v.TimeOfOrigin.Unix() {
 				log.Print(watcher.lastStatusTime)
-				notifier.Notify(v.Railway, v.Text)
+				notifier.Notify(v.Railway, v.Text, v.Status)
 				watcher.lastStatusTime[v.Railway] = v.TimeOfOrigin
 			}
 		}

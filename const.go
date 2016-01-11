@@ -40,7 +40,7 @@ const (
 
 const (
 	StatusSuspended         = "運転見合わせ"
-	StatuShuttle            = "折返し運転"
+	StatusShuttle            = "折返し運転"
 	StatusTimetableDisarray = "ダイヤ乱れ"
 	// 運転再開・ダイヤ乱れ
 	StatusDelay          = "遅延"

@@ -25,7 +25,8 @@ func main() {
 	}
 
 	if env.DEBUG {
-		log.Print(notifier.Notify(RailwayFukutoshin, "start program"))
+		log.Print(notifier.Notify(RailwayFukutoshin, "start program", ""))
 	}
+	log.Print("start")
 	log.Fatal(watcher.Start(notifier))
 }
