@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 //good, warning or danger, or color code
@@ -34,12 +35,11 @@ type PostMessageResponse struct {
 }
 
 type SlackNotifier struct {
-	AccessToken string
-	Channels    []ChannelConf
+	Conf *WatcherConf
 }
 
 func NewSlackNotifier(conf *WatcherConf) (*SlackNotifier, error) {
-	return &SlackNotifier{AccessToken: conf.SlackAccessToken, Channels: conf.Channels}, nil
+	return &SlackNotifier{Conf: conf}, nil
 }
 
 func (slackNotifier *SlackNotifier) Notify(railway string, text string, status string) error {
@@ -58,7 +58,7 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string, status s
 
 	var channel []string
 	var iconUrl string
-	for _, v := range slackNotifier.Channels {
+	for _, v := range slackNotifier.Conf.Channels {
 		if v.Railway == railway {
 			if v.AuthorIcon != "" {
 				attachment.AuthorIcon = v.AuthorIcon
@@ -84,7 +84,6 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string, status s
 		return err
 	}
 	body := url.Values{}
-	body.Set("token", slackNotifier.AccessToken)
 	body.Set("text", "")
 	body.Set("username", "metrobot")
 	if iconUrl != "" {
@@ -93,7 +92,12 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string, status s
 	body.Set("attachments", string(buf))
 
 	for _, v := range channel {
-		body.Set("channel", v)
+		teamAndChannel := strings.Split(v, ":")
+		if len(teamAndChannel) != 2 {
+			continue
+		}
+		body.Set("token", slackNotifier.Conf.GetAccessToken(teamAndChannel[0]))
+		body.Set("channel", teamAndChannel[1])
 		response, _ := http.PostForm("https://slack.com/api/chat.postMessage", body)
 		dec := json.NewDecoder(response.Body)
 		var data PostMessageResponse

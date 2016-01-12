@@ -13,10 +13,16 @@ type ChannelConf struct {
 	IconUrl    string `json:"icon_url"`
 }
 
+type SlackTeam struct {
+	Name        string `json:"name"`
+	AccessToken string `json:"access_token"`
+}
+
 type WatcherConf struct {
 	Channels         []ChannelConf
-	MetroAccessToken string `json:"metro_access_token"`
-	SlackAccessToken string `json:"slack_access_token"`
+	SlackTeams       []SlackTeam `json:"slack_teams"`
+	MetroAccessToken string      `json:"metro_access_token"`
+	SlackTeamMap     map[string]SlackTeam
 }
 
 func NewConf(filePath string) (*WatcherConf, error) {
@@ -31,5 +37,18 @@ func NewConf(filePath string) (*WatcherConf, error) {
 		return nil, err
 	}
 
+	conf.SlackTeamMap = make(map[string]SlackTeam)
+	for _, v := range conf.SlackTeams {
+		conf.SlackTeamMap[v.Name] = v
+	}
+
 	return &conf, nil
+}
+
+func (watcherConf *WatcherConf) GetAccessToken(team string) string {
+	if v, ok := watcherConf.SlackTeamMap[team]; ok {
+		return v.AccessToken
+	}
+
+	return ""
 }
