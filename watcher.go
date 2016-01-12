@@ -43,8 +43,13 @@ func (watcher *MetroWatcher) Get(retry int) ([]TrainInformationResponse, error) 
 	}
 
 	res, err := http.Get("https://api.tokyometroapp.jp/api/v2/datapoints?" + watcher.form.Encode())
-	if err != nil {
+	if retry < 1 && err != nil {
 		return nil, err
+	}
+	// リトライできる時はエラーを返さずにリトライする
+	if err != nil {
+		time.Sleep(1 * time.Minute)
+		return watcher.Get(retry - 1)
 	}
 	if res.StatusCode != 200 {
 		time.Sleep(10 * time.Second)
@@ -63,7 +68,7 @@ func (watcher *MetroWatcher) Get(retry int) ([]TrainInformationResponse, error) 
 
 func (watcher *MetroWatcher) Start(notifier *SlackNotifier) error {
 	for {
-		current, err := watcher.Get(2)
+		current, err := watcher.Get(3)
 		if err != nil {
 			return err
 		}
