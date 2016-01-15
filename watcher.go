@@ -12,7 +12,7 @@ import (
 
 type MetroWatcher struct {
 	form           url.Values
-	lastStatusTime map[string]time.Time
+	lastStatusTime map[string]TrainInformationResponse
 }
 
 type TrainInformationResponse struct {
@@ -33,7 +33,7 @@ func NewMetroWatcher(conf *WatcherConf) (*MetroWatcher, error) {
 	form.Add("rdf:type", TypeTrainInfomation)
 	form.Add("acl:consumerKey", conf.MetroAccessToken)
 
-	lastStatusTime := make(map[string]time.Time)
+	lastStatusTime := make(map[string]TrainInformationResponse)
 	return &MetroWatcher{form: form, lastStatusTime: lastStatusTime}, nil
 }
 
@@ -76,17 +76,31 @@ func (watcher *MetroWatcher) Start(notifier *SlackNotifier) error {
 		// FIXME: v.Railwayのvalidation
 		for _, v := range current {
 			if _, ok := watcher.lastStatusTime[v.Railway]; ok == false {
-				watcher.lastStatusTime[v.Railway] = v.TimeOfOrigin
+				watcher.lastStatusTime[v.Railway] = v
 				continue
 			}
 
-			if v.Status != "" && watcher.lastStatusTime[v.Railway].Unix() != v.TimeOfOrigin.Unix() {
+			if watcher.shouldNotify(v) {
 				log.Print(watcher.lastStatusTime)
 				notifier.Notify(v.Railway, v.Text, v.Status)
-				watcher.lastStatusTime[v.Railway] = v.TimeOfOrigin
+				watcher.lastStatusTime[v.Railway] = v
 			}
 		}
 
 		time.Sleep(5 * time.Minute)
 	}
+}
+
+func (watcher *MetroWatcher) shouldNotify(v TrainInformationResponse) bool {
+	// ステータスに何らかの値が入ってて（=異常）TimeOfOriginが違ったらtrue
+	if v.Status != "" && watcher.lastStatusTime[v.Railway].TimeOfOrigin.Unix() != v.TimeOfOrigin.Unix() {
+		return true
+	}
+
+	// ステータスありからステータスなしに変わった場合はtrue
+	if watcher.lastStatusTime[v.Railway].Status != "" && v.Status == "" {
+		return true
+	}
+
+	return false
 }
