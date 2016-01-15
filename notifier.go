@@ -8,18 +8,6 @@ import (
 	"strings"
 )
 
-//good, warning or danger, or color code
-var StatusColormap = map[string]string{
-	StatusSuspended:         "danger",
-	StatusShuttle:           "danger",
-	StatusTimetableDisarray: "warning",
-	StatusDelay:             "warning",
-	StatusPartiallyDelay:    "warning",
-	StatusAbortDirect:       "warning",
-	StatusRestartDirect:     "good",
-	StatusCancel:            "danger",
-}
-
 type Attachment struct {
 	Color      string `json:"color"`
 	Text       string `json:"text"`
