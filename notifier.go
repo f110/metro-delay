@@ -34,7 +34,7 @@ func (slackNotifier *SlackNotifier) Notify(railway string, text string, status s
 	attachment := &Attachment{
 		Color:      "good",
 		Text:       text,
-		Fallback:   "["+railway+"] "+text,
+		Fallback:   "["+RailwayToName[railway]+"] "+text,
 		AuthorName: RailwayToName[railway],
 	}
 
