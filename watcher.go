@@ -60,7 +60,8 @@ func (watcher *MetroWatcher) Get(retry int) ([]TrainInformationResponse, error) 
 	jsonBuf := make([]TrainInformationResponse, 0)
 	err = json.Unmarshal(buf, &jsonBuf)
 	if err != nil {
-		return nil, err
+		log.Print(err)
+		return jsonBuf, nil
 	}
 
 	return jsonBuf, nil
